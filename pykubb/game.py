@@ -9,7 +9,7 @@ import re
 from pykubb.team import Team
 
 
-class Game():
+class Game(object):
     """Kubb game."""
     
     teams = None
@@ -19,15 +19,18 @@ class Game():
     throw_count = 0
 
     def __init__(self):
+        """Initialize the game."""
         self.teams = {}
         self.teams['a'] = Team('a')
         self.teams['b'] = Team('b')
 
     def handle_turn(self, turn):
+        """Handle each action in a turn."""
         for action in turn:
             self.handle_action(action)
 
     def pop_action(self, action):
+        """Pull an action off to work on."""
         m = re.match('(?P<modifier>\d?)(?P<action>[irpqbf\-=kx])+', action)
         if m is not None:
             mod = m.group('modifier')
@@ -40,6 +43,7 @@ class Game():
             raise Exception("Failed to parse %s on throw %d." % (action, self.throw_count))
 
     def handle_action(self, raw_action):
+        """Handle an action in PK notation"""
         # first unpack the action
         if ':' in raw_action:
             (player, action) = raw_action.split(':')
@@ -71,6 +75,7 @@ class Game():
             action = rem_action
 
     def switch_teams(self):
+        """Switch teams!"""
         if self.throwing == 'a':
             self.throwing = 'b'
             self.defending = 'a'
@@ -79,6 +84,7 @@ class Game():
             self.defending = 'b'
 
     #def finalize(self):
+        #"""Finalize the game."""
         #for team in ['a', 'b']:
             #eff_sum = 0
             #eff_count = 0
@@ -88,6 +94,7 @@ class Game():
             #self.game[team]['eff1'] = float(eff_sum) / float(eff_count)
 
     def run(self, plays):
+        """Process the array of turns for a game."""
         for turn in plays:
             self.turn_count += 1
             self.handle_turn(turn)
@@ -95,5 +102,7 @@ class Game():
         #self.finalize()
 
     def print_stats(self):
+        """Print stats for the game."""
         self.teams['a'].print_stats()
         self.teams['b'].print_stats()
+
