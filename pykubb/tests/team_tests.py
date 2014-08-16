@@ -3,20 +3,16 @@
 import unittest
 if __name__ == "__main__" and __package__ is None:
     __package__ = "pykubb.tests"
-from pykubb.player import Player
+from pykubb.team import Team
 
 
 class TestPlayer(unittest.TestCase):
     """Run some tests."""
 
-    def test_player_init(self):
-        p = Player('jamie')
-        assert p.token == 'jamie'
-
-    def test_player_throw(self):
-        p = Player('a')
-        p.throw()
-        assert p.stats['throws'] == 1
+    def test_team_throw(self):
+        t = Team('a')
+        t.throw()
+        assert t.stats['throws'] == 1
 
 
 if __name__ == '__main__':

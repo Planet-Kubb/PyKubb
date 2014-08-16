@@ -7,6 +7,7 @@ aftivity in the games and match. Optionally this module can
 augment the original YAML file with calculations and
 can generate a Markdown formatted file for each match.
 """
+# pylint: disable=C0301,W0622,C0103
 
 import pprint
 from pykubb.player import Player
@@ -25,7 +26,15 @@ class Team(object):
         self.players = {}
         self.stats = {}
         self.stats['baseline'] = 5
-        for stat in ['field', 'kih', 'throws', 'inkast', 'hit', 'adv', 'penalty', 'rethrow']:
+        for stat in [
+            'field',
+            'kih',
+            'throws',
+            'inkast',
+            'hit',
+            'adv',
+            'penalty',
+            'rethrow']:
             self.stats[stat] = 0
 
     def add_player(self, player_token):
@@ -42,21 +51,22 @@ class Team(object):
         self.check_player(player_token)
         return self.players[player_token]
 
-    def throw(self, player_token = None):
+    def throw(self, batons = 1, player_token = None):
         """The team throws a baton."""
-        self.stats['throws'] += 1
+        self.stats['throws'] += batons
         if player_token is not None:
             self.get_player(player_token).throw()
-    
+
     def field_hit(self, kubbs = 1, player_token = None):
         """Field kubb is hit."""
-        self.throw(player_token)
+        self.throw(1, player_token)
         self.stats['field'] -= kubbs
+        return self.stats['field']
     
-    def lost_base(self, kubbs = 1, player_token = None):
+    def lost_base(self, kubbs = 1):
         """Lost a baseline."""
         self.stats['baseline'] -= kubbs
-    
+
     def inkast(self, kubbs = 1, player_token = None):
         """Inkastare drills!"""
         self.stats['field'] += kubbs
@@ -68,14 +78,18 @@ class Team(object):
     def rethrow(self, kubbs = 1, player_token = None):
         """Inkastare rethrows"""
         self.stats['inkast'] += kubbs
-    
+        if player_token is not None:
+            self.get_player(player_token).rethrow(kubbs)
+
     def penalty(self, kubbs = 1, player_token = None):
         """Ouch, penalty!"""
         self.stats['penalty'] += kubbs
-    
+        if player_token is not None:
+            self.get_player(player_token).penalty(kubbs)
+
     def king(self, player_token = None):
         """King hit! Win!"""
-        self.throw(player_token)
+        self.throw(1, player_token)
         self.won()
     
     def lost(self):
@@ -85,6 +99,17 @@ class Team(object):
     def won(self):
         """Win!"""
         self.stats['won'] = True
+
+    def finalize(self):
+        """Finalize the game."""
+        # for team in ['a', 'b']:
+        #     eff_sum = 0
+        #     eff_count = 0
+        #     for eff_each in self.game[team]['eff1_arr']:
+        #         eff_sum += eff_each
+        #         eff_count += 1
+        #     self.game[team]['eff1'] = float(eff_sum) / float(eff_count)
+        pass
 
     def print_stats(self):
         """Show stats for the team!"""

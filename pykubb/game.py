@@ -2,6 +2,7 @@
 Define the game class.
 
 """
+# pylint: disable=C0301,W0622,C0103
 
 import re
 from pykubb.team import Team
@@ -29,16 +30,25 @@ class Game(object):
 
     def pop_action(self, action):
         """Pull an action off to work on."""
-        m = re.match('(?P<modifier>\d?)(?P<action>[irpqbf\-=kx])+', action)
-        if m is not None:
-            mod = m.group('modifier')
+        raction = re.match(
+            r'(?P<modifier>\d?)(?P<action>[irpqbf\-=kx])+',
+            action)
+        if raction is not None:
+            mod = raction.group('modifier')
             if mod == '':
-                mod = '1'
-            act = m.group('action')
-            new_act = action.replace(m.group(0), '', 1)
-            return int(mod), act, new_act
+                mod = 1
+            else:
+                mod = int(mod)
+            act = raction.group('action')
+            new_act = action.replace(raction.group(0), '', 1)
+            return mod, act, new_act
         else:
-            raise Exception("Failed to parse %s on throw %d." % (action, self.throw_count))
+            raise Exception(
+                "Failed to parse %s on throw %d." % (
+                    action,
+                    self.throw_count
+                )
+            )
 
     def handle_action(self, raw_action):
         """Handle an action in PK notation"""
@@ -52,7 +62,7 @@ class Game(object):
             (mod, action, rem_action) = self.pop_action(action)
 
             if action == 'b':
-                self.teams[self.defending].lost_base(mod, player)
+                self.teams[self.defending].lost_base(mod)
 
             if action == 'f':
                 self.teams[self.throwing].field_hit(mod, player)
@@ -78,18 +88,13 @@ class Game(object):
             self.throwing = 'b'
             self.defending = 'a'
         else:
-            self.throwing ='a'
+            self.throwing = 'a'
             self.defending = 'b'
 
-    # def finalize(self):
-    #     """Finalize the game."""
-    #     for team in ['a', 'b']:
-    #         eff_sum = 0
-    #         eff_count = 0
-    #         for eff_each in self.game[team]['eff1_arr']:
-    #             eff_sum += eff_each
-    #             eff_count += 1
-    #         self.game[team]['eff1'] = float(eff_sum) / float(eff_count)
+    def finalize(self):
+        """Finalize the game by telling each team to finalize."""
+        for team in ['a', 'b']:
+            self.teams[team].finalize()
 
     def run(self, plays):
         """Process the array of turns for a game."""
@@ -97,7 +102,7 @@ class Game(object):
             self.turn_count += 1
             self.handle_turn(turn)
             self.switch_teams()
-        # self.finalize()
+        self.finalize()
 
     def print_stats(self):
         """Print stats for the game."""
