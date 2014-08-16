@@ -19,13 +19,10 @@ if __name__ == '__main__':
 
     plays = [
         ['a:-', 'a:-', 'a:b', 'b:b', 'b:-', 'b:b'],
-        ['c:3i', 'c:f', 'c:f', 'c:-', 'd:f', 'd:-', 'd:i'],
+        ['c:3i', 'c:f', 'c:f', 'c:-', 'd:f', 'd:-', 'd:-'],
         ['a:3i', 'a:2f', 'a:f', 'a:-', 'b:-', 'b:-', 'b:-'],
         ['c:3i', 'c:2f', 'c:-', 'c:f', 'd:-', 'd:b', 'd:b'],
         ['a:5i2rp', 'a:4f', 'a:f', 'a:b-', 'b:-', 'b:b', 'b:k']
     ]
     m.run(plays)
     m.print_stats()
-
-    m = None
-

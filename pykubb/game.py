@@ -15,7 +15,6 @@ class Game(object):
     turn_count = 0
     throwing = 'a'
     defending = 'b'
-    throw_count = 0
 
     def __init__(self):
         """Initialize the game."""
@@ -46,12 +45,13 @@ class Game(object):
             raise Exception(
                 "Failed to parse %s on throw %d." % (
                     action,
-                    self.throw_count
+                    self.turn_count
                 )
             )
 
     def handle_action(self, raw_action):
         """Handle an action in PK notation"""
+
         # first unpack the action
         if ':' in raw_action:
             (player, action) = raw_action.split(':')
@@ -63,6 +63,7 @@ class Game(object):
 
             if action == 'b':
                 self.teams[self.defending].lost_base(mod)
+                self.teams[self.throwing].hit_base(mod, player)
 
             if action == 'f':
                 self.teams[self.throwing].field_hit(mod, player)
@@ -80,6 +81,9 @@ class Game(object):
             if action == 'r':
                 self.teams[self.throwing].rethrow(mod, player)
 
+            if action == '-':
+                self.teams[self.throwing].miss(mod, player)
+
             action = rem_action
 
     def switch_teams(self):
@@ -90,6 +94,14 @@ class Game(object):
         else:
             self.throwing = 'a'
             self.defending = 'b'
+
+    def get_throw_count(self):
+        """Get the throw count for the game"""
+        throws = 0
+        for team in self.teams:
+            if self.teams[team].throw_count is not None:
+                throws += self.teams[team].throw_count
+        return throws
 
     def finalize(self):
         """Finalize the game by telling each team to finalize."""
@@ -106,6 +118,7 @@ class Game(object):
 
     def print_stats(self):
         """Print stats for the game."""
+        print "Throw count: %d" % self.get_throw_count()
         self.teams['a'].print_stats()
         self.teams['b'].print_stats()
 

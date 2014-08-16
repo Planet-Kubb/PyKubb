@@ -17,25 +17,41 @@ class Team(object):
     """Define a Kubb team."""
 
     token = None
+    win = None
     players = None
-    stats = None
+
+    baseline_count = None
+    field_count = None
+    kubbs_in_hand = None
+    throw_count = None
+    hit_count = None
+    adv_throw_count = None
+    adv_hit_count = None
+    penalty_count = None
+    rethrow_count = None
+    inkast_count = None
+
+    history = None
 
     def __init__(self, team_token = None):
         """Initialize the team."""
         self.token = team_token
+        self.win = False
+
         self.players = {}
-        self.stats = {}
-        self.stats['baseline'] = 5
-        for stat in [
-            'field',
-            'kih',
-            'throws',
-            'inkast',
-            'hit',
-            'adv',
-            'penalty',
-            'rethrow']:
-            self.stats[stat] = 0
+
+        self.baseline_count = 5
+        self.field_count = 0
+        self.kubbs_in_hand = 0
+        self.throw_count = 0
+        self.hit_count = 0
+        self.adv_throw_count = 0
+        self.adv_hit_count = 0
+        self.penalty_count = 0
+        self.rethrow_count = 0
+        self.inkast_count = 0
+
+        self.history = []
 
     def add_player(self, player_token):
         """Add a player to the team."""
@@ -53,52 +69,62 @@ class Team(object):
 
     def throw(self, batons = 1, player_token = None):
         """The team throws a baton."""
-        self.stats['throws'] += batons
+        self.throw_count += batons
         if player_token is not None:
             self.get_player(player_token).throw()
+
+    def miss(self, batons = 1, player_token = None):
+        """Baton misses."""
+        self.throw(batons, player_token)
 
     def field_hit(self, kubbs = 1, player_token = None):
         """Field kubb is hit."""
         self.throw(1, player_token)
-        self.stats['field'] -= kubbs
-        return self.stats['field']
+        self.field_count -= kubbs
+        return self.field_count
     
     def lost_base(self, kubbs = 1):
         """Lost a baseline."""
-        self.stats['baseline'] -= kubbs
+        self.baseline_count -= kubbs
+        self.kubbs_in_hand += kubbs
 
+    def hit_base(self, kubbs = 1, player_token = None):
+        """Hit opponents baseline."""
+        self.throw(1, player_token)
+        self.hit_count += 1
+        
     def inkast(self, kubbs = 1, player_token = None):
         """Inkastare drills!"""
-        self.stats['field'] += kubbs
-        self.stats['kih'] -= kubbs
-        self.stats['inkast'] += kubbs
+        self.field_count += kubbs
+        self.kubbs_in_hand -= kubbs
+        self.inkast_count += kubbs
         if player_token is not None:
             self.get_player(player_token).inkast(kubbs)
     
     def rethrow(self, kubbs = 1, player_token = None):
         """Inkastare rethrows"""
-        self.stats['inkast'] += kubbs
+        self.inkast_count += kubbs
         if player_token is not None:
             self.get_player(player_token).rethrow(kubbs)
 
     def penalty(self, kubbs = 1, player_token = None):
         """Ouch, penalty!"""
-        self.stats['penalty'] += kubbs
+        self.penalty_count += kubbs
         if player_token is not None:
             self.get_player(player_token).penalty(kubbs)
 
     def king(self, player_token = None):
         """King hit! Win!"""
         self.throw(1, player_token)
-        self.won()
+        self.win = True
     
     def lost(self):
         """Lose!"""
-        self.stats['won'] = False
+        self.win = False
     
     def won(self):
         """Win!"""
-        self.stats['won'] = True
+        self.win = True
 
     def finalize(self):
         """Finalize the game."""
@@ -114,9 +140,13 @@ class Team(object):
     def print_stats(self):
         """Show stats for the team!"""
         print "Stats for team %s:" % self.token
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(self.stats)
-        
+        if self.win:
+            print "  WINNER!"
+        print "  Throw count: %d" % self.throw_count
+        print "  Hit count: %d (%f%%)" % (self.hit_count, (self.hit_count/self.throw_count) * 100)
+        print "  Inkast: %d %d %d" % (self.inkast_count, self.rethrow_count, self.penalty_count)
+        print "  Kubbs in hand: %d" % (self.kubbs_in_hand)
+
         for player in self.players:
             self.players[player].print_stats()
 

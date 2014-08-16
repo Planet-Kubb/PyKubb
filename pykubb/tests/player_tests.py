@@ -16,7 +16,7 @@ class TestPlayer(unittest.TestCase):
     def test_player_throw(self):
         p = Player('a')
         p.throw()
-        assert p.stats['throws'] == 1
+        assert p.throw_count == 1
 
 
 if __name__ == '__main__':
