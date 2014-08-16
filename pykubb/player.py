@@ -4,7 +4,6 @@ Define player class.
 """
 
 import pprint
-import logging
 
 
 class Player(object):

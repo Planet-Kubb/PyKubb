@@ -3,8 +3,6 @@ Define the game class.
 
 """
 
-import pprint
-import logging
 import re
 from pykubb.team import Team
 
@@ -83,15 +81,15 @@ class Game(object):
             self.throwing ='a'
             self.defending = 'b'
 
-    #def finalize(self):
-        #"""Finalize the game."""
-        #for team in ['a', 'b']:
-            #eff_sum = 0
-            #eff_count = 0
-            #for eff_each in self.game[team]['eff1_arr']:
-                #eff_sum += eff_each
-                #eff_count += 1
-            #self.game[team]['eff1'] = float(eff_sum) / float(eff_count)
+    # def finalize(self):
+    #     """Finalize the game."""
+    #     for team in ['a', 'b']:
+    #         eff_sum = 0
+    #         eff_count = 0
+    #         for eff_each in self.game[team]['eff1_arr']:
+    #             eff_sum += eff_each
+    #             eff_count += 1
+    #         self.game[team]['eff1'] = float(eff_sum) / float(eff_count)
 
     def run(self, plays):
         """Process the array of turns for a game."""
@@ -99,7 +97,7 @@ class Game(object):
             self.turn_count += 1
             self.handle_turn(turn)
             self.switch_teams()
-        #self.finalize()
+        # self.finalize()
 
     def print_stats(self):
         """Print stats for the game."""
