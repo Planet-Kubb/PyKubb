@@ -1,2 +1,2 @@
 
-[![Build Status](http://img.shields.io/travis/Planet-Kubb/PyKubb.svg?style=flat)](https://travis-ci.org/Planet-Kubb/PyKubb) [![Coverage Status](http://img.shields.io/coveralls/Planet-Kubb/PyKubb.svg?style=flat)](https://coveralls.io/r/Planet-Kubb/PyKubb)
+[![Build Status](http://img.shields.io/travis/Planet-Kubb/PyKubb.svg?style=flat)](https://travis-ci.org/Planet-Kubb/PyKubb) [![Coverage Status](http://img.shields.io/coveralls/Planet-Kubb/PyKubb.svg?style=flat)](https://coveralls.io/r/Planet-Kubb/PyKubb) [![Code Health](https://landscape.io/github/Planet-Kubb/PyKubb/master/landscape.png)](https://landscape.io/github/Planet-Kubb/PyKubb/master)
