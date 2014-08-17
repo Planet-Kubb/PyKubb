@@ -43,7 +43,7 @@ class Game(object):
             return mod, act, new_act
         else:
             raise Exception(
-                "Failed to parse %s on throw %d." % (
+                "Failed to parse %s on turn %d." % (
                     action,
                     self.turn_count
                 )
@@ -61,39 +61,45 @@ class Game(object):
         while action is not '':
             (mod, action, rem_action) = self.pop_action(action)
 
-            if action == 'b':
+            if action == 'b': # Hit baseline kubb
                 self.teams[self.defending].lost_base(mod)
                 self.teams[self.throwing].hit_base(mod, player)
 
-            if action == 'f':
+            if action == 'f': # Hit field kubb
                 self.teams[self.throwing].field_hit(mod, player)
 
-            if action == 'i':
+            if action == 'i': # Inkast a kubb
                 self.teams[self.throwing].inkast(mod, player)
 
-            if action == 'p':
+            if action == 'p': # Penalty kubb
                 self.teams[self.throwing].penalty(mod, player)
 
-            if action == 'k':
+            if action == 'k': # King hit, win!
                 self.teams[self.throwing].king(player)
                 self.teams[self.defending].lost()
 
-            if action == 'r':
+            if action == 'r': # Rethrow a kubb
                 self.teams[self.throwing].rethrow(mod, player)
 
-            if action == '-':
+            if action == 'y': # Resque kubb attempt
+                # TODO: need to implement
+                pass
+
+            if action == 'a': # Inidicate advantage line
+                # TODO: need to implement
+                pass
+
+            if action == '-': # Miss
                 self.teams[self.throwing].miss(mod, player)
+
+            if action == '=': # Missed king shot
+                self.teams[self.throwing].king_miss(mod, player)
 
             action = rem_action
 
     def switch_teams(self):
         """Switch teams!"""
-        if self.throwing == 'a':
-            self.throwing = 'b'
-            self.defending = 'a'
-        else:
-            self.throwing = 'a'
-            self.defending = 'b'
+        self.throwing, self.defending = self.defending, self.throwing
 
     def get_throw_count(self):
         """Get the throw count for the game"""
@@ -105,7 +111,7 @@ class Game(object):
 
     def finalize(self):
         """Finalize the game by telling each team to finalize."""
-        for team in ['a', 'b']:
+        for team in self.teams:
             self.teams[team].finalize()
 
     def run(self, plays):
@@ -119,6 +125,6 @@ class Game(object):
     def print_stats(self):
         """Print stats for the game."""
         print "Throw count: %d" % self.get_throw_count()
-        self.teams['a'].print_stats()
-        self.teams['b'].print_stats()
+        for team in self.teams:
+            self.teams[team].print_stats()
 

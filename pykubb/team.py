@@ -9,7 +9,6 @@ can generate a Markdown formatted file for each match.
 """
 # pylint: disable=C0301,W0622,C0103
 
-import pprint
 from pykubb.player import Player
 
 
@@ -25,11 +24,13 @@ class Team(object):
     kubbs_in_hand = None
     throw_count = None
     hit_count = None
+    miss_count = None
     adv_throw_count = None
     adv_hit_count = None
     penalty_count = None
     rethrow_count = None
     inkast_count = None
+    king_miss = None
 
     history = None
 
@@ -45,11 +46,13 @@ class Team(object):
         self.kubbs_in_hand = 0
         self.throw_count = 0
         self.hit_count = 0
+        self.miss_count = 0
         self.adv_throw_count = 0
         self.adv_hit_count = 0
         self.penalty_count = 0
         self.rethrow_count = 0
         self.inkast_count = 0
+        self.king_miss = 0
 
         self.history = []
 
@@ -76,6 +79,18 @@ class Team(object):
     def miss(self, batons = 1, player_token = None):
         """Baton misses."""
         self.throw(batons, player_token)
+        self.miss_count += 1
+        if player_token is not None:
+            self.get_player(player_token).miss(batons)
+        return self.miss_count
+
+    def king_miss(self, batons = 1, player_token = None):
+        """King miss."""
+        self.throw(batons, player_token)
+        self.king_miss += 1
+        if player_token is not None:
+            self.get_player(player_token).king_miss(batons)
+        return self.king_miss
 
     def field_hit(self, kubbs = 1, player_token = None):
         """Field kubb is hit."""
@@ -87,6 +102,7 @@ class Team(object):
         """Lost a baseline."""
         self.baseline_count -= kubbs
         self.kubbs_in_hand += kubbs
+        return self.baseline_count
 
     def hit_base(self, kubbs = 1, player_token = None):
         """Hit opponents baseline."""
@@ -100,12 +116,16 @@ class Team(object):
         self.inkast_count += kubbs
         if player_token is not None:
             self.get_player(player_token).inkast(kubbs)
-    
+        return self.inkast_count
+
     def rethrow(self, kubbs = 1, player_token = None):
         """Inkastare rethrows"""
         self.inkast_count += kubbs
+        self.rethrow_count += kubbs
         if player_token is not None:
+            self.get_player(player_token).inkast(kubbs)
             self.get_player(player_token).rethrow(kubbs)
+        return self.rethrow_count
 
     def penalty(self, kubbs = 1, player_token = None):
         """Ouch, penalty!"""
@@ -117,6 +137,7 @@ class Team(object):
         """King hit! Win!"""
         self.throw(1, player_token)
         self.win = True
+        return self.win
     
     def lost(self):
         """Lose!"""
@@ -143,7 +164,12 @@ class Team(object):
         if self.win:
             print "  WINNER!"
         print "  Throw count: %d" % self.throw_count
-        print "  Hit count: %d (%f%%)" % (self.hit_count, (self.hit_count/self.throw_count) * 100)
+        print "  Hit/Miss: %d (%f%%) %d (%f%%)" % (
+            self.hit_count,
+            (self.hit_count/self.throw_count) * 100,
+            self.miss_count,
+            (self.miss_count/self.throw_count) * 100
+        )
         print "  Inkast: %d %d %d" % (self.inkast_count, self.rethrow_count, self.penalty_count)
         print "  Kubbs in hand: %d" % (self.kubbs_in_hand)
 
